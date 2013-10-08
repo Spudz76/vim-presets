@@ -1,0 +1,18 @@
+{
+  "boss": true,
+  "white": true,
+  "newcap": false,
+  "maxlen": 100,
+  "indent": 2,
+  "strict": true,
+  "laxcomma": true,
+  "smarttabs": true,
+  "browser": true,
+  "jquery": true,
+  "mootools": true,
+  "node": true,
+  "devel": true,
+  "undef": true,
+  "unused": "strict",
+  "onecase": true
+}
