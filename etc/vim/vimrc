@@ -10,7 +10,7 @@
 runtime! debian.vim
 
 " load pathogen bundle autoloader
-execute pathogen#infect('bundle/{}', '/usr/share/vim/vimcurrent/bundle/{}')
+execute pathogen#infect('bundle/{}', '/usr/share/vim/vim73/bundle/{}')
 
 " Uncomment the next line to make Vim more Vi-compatible
 " NOTE: debian.vim sets 'nocompatible'.  Setting 'compatible' changes numerous
@@ -19,7 +19,9 @@ execute pathogen#infect('bundle/{}', '/usr/share/vim/vimcurrent/bundle/{}')
 
 " Vim5 and later versions support syntax highlighting. Uncommenting the next
 " line enables syntax highlighting by default.
-syntax on
+if &t_Co > 2
+  syntax on
+endif
 
 " If using a dark background within the editing area and syntax highlighting
 " turn on this option as well
@@ -65,10 +67,21 @@ set tabstop=4
 if has("autocmd")
   augroup js_style
     au!
-	au FileType javascript set expandtab
-	au FileType javascript set shiftwidth=2
-	au FileType javascript set softtabstop=2
-	au FileType javascript set tabstop=2
+    au FileType javascript set expandtab
+    au FileType javascript set shiftround
+    au FileType javascript set shiftwidth=2
+    au FileType javascript set softtabstop=2
+    au FileType javascript set tabstop=2
+    au FileType jade set expandtab
+    au FileType jade set shiftround
+    au FileType jade set shiftwidth=2
+    au FileType jade set softtabstop=2
+    au FileType jade set tabstop=2
+    au FileType stylus set expandtab
+    au FileType stylus set shiftround
+    au FileType stylus set shiftwidth=2
+    au FileType stylus set softtabstop=2
+    au FileType stylus set tabstop=2
   augroup END
 endif
 
@@ -80,9 +93,36 @@ vnoremap <silent><F1> :JSHint<CR>
 cnoremap <F1> JSHint
 
 if has("autocmd")
-  augroup markdown
-    au!
-    au BufNewFile,BufRead *.md,*.markdown setlocal filetype=ghmarkdown
-  augroup END
+    augroup markdown
+        au!
+        au BufNewFile,BufRead *.md,*.markdown setlocal filetype=ghmarkdown
+    augroup END
 endif
 
+set list
+set listchars=tab:»·,trail:·,nbsp:·,eol:¶,precedes:<,extends:>
+
+"force a sudo save if the file is unwritable
+cmap w!! :silent w !sudo tee % >/dev/null<CR>
+
+"quick draw quote replacement
+nmap <leader>' <Esc>:%s/'/"/g<CR>
+
+"npm version magic for package.json dependencies lines
+function! Npm_version()
+  let line = getline(".")
+  let pkg = line[stridx(line,"\"")+1:stridx(line,"\"",stridx(line,"\"")+1)-1]
+  :if pkg!=""
+  let ver = matchstr(system("npm -q info ".shellescape(pkg)." version | grep ^[0-9]"),"[0-9\.]*")
+  :if ver!=""
+  return ver
+  :endif
+  :endif
+endfunction
+map <F8> <Esc>0/:<CR>DA: "<C-R>=Npm_version()<CR>"<Esc>?\.<CR>ldwix<Esc>$
+
+"setup column hints
+set nowrap
+set textwidth=80
+set cc=+1  " highlight column after 'textwidth'
+hi ColorColumn ctermbg=darkblue guibg=#D9D9FF
